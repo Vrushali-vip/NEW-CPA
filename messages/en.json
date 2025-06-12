@@ -1,0 +1,421 @@
+{
+  "raiseClaim": {
+    "title": "Raise a Claim",
+    "success": "Your claim has been submitted successfully!",
+    "policyNumber": "Policy Number",
+    "claimantName": "Your Name",
+    "claimantEmail": "Your Email",
+    "claimantPhone": "Your Phone",
+    "incidentDate": "Incident Date",
+    "incidentType": "Incident Type",
+    "selectIncidentType": "Select Incident Type",
+    "incidentDescription": "Incident Description",
+    "supportingDocuments": "Supporting Documents",
+    "submit": "Submit Claim",
+    "validation": {
+      "policyNumberRequired": "Policy number is required.",
+      "claimantNameRequired": "Claimant name is required.",
+      "claimantEmailRequired": "Email is required.",
+      "claimantEmailInvalid": "Invalid email address.",
+      "claimantPhoneRequired": "Phone number is required.",
+      "incidentDateRequired": "Incident date is required.",
+      "incidentTypeRequired": "Incident type is required.",
+      "incidentDescriptionRequired": "Incident description is required."
+    }
+  },
+  "navbar": {
+    "articles": "NEWS FEED",
+    "language": {
+      "en": "EN",
+      "de": "DE"
+    }
+  },
+  "newsFeed": {
+    "heading": "News Feed",
+    "items": [
+      {
+        "title": "New Safety Measures Introduced for Travelers",
+        "summary": "Compass Point Assist rolls out new safety protocols for individuals visiting high-risk zones.",
+        "date": "April 26, 2025"
+      },
+      {
+        "title": "Humanitarian Access Expanded in Eastern Ukraine",
+        "summary": "Agencies report better access to affected communities, improving support delivery.",
+        "date": "April 23, 2025"
+      },
+      {
+        "title": "Ukraine Travel Advisory Updated",
+        "summary": "Foreign offices adjust travel guidance based on latest geopolitical developments.",
+        "date": "April 20, 2025"
+      }
+    ]
+  },
+  "insuranceForm": {
+    "riskZoneDaysTooltip": "Select the number of days you'll be traveling based on your destination's risk level.",
+    "steps": [
+      "Trip & Coverage",
+      "Your Details",
+      "Trip Information",
+      "Medical & Emergency",
+      "Purchase Summary"
+    ],
+    "empty": "Empty",
+    "travelDetails": "Travel Details",
+    "warnings": "Important: Please read the following information carefully.",
+    "travelStartDate": "Travel Start Date",
+    "selectStartDate": "Select start date",
+    "travelEndDate": "Travel End Date",
+    "selectEndDate": "Select end date",
+    "riskZoneDays": "Select days based on Risk Zone",
+    "totalDays": "Total Days",
+    "greenZoneDays": "Days in Green Zone",
+    "amberZoneDays": "Days in Amber Zone",
+    "redZoneDays": "Days in Red Zone",
+    "coverageOptions": "Coverage Options",
+    "emergencyMedical": "Medical Emergency Coverage",
+    "selectMedicalCoverage": "Select emergency medical coverage",
+    "personalAccident": "Personal Accident Coverage",
+    "selectPACoverage": "Select PA coverage",
+    "addTransitCover": "Add additional €250,000 Transit Cover for",
+    "addTransitCoverTooltip": "Departure and follow home membership",
+    "quoteSummary": "Quote Summary",
+    "medical": "Medical coverag",
+    "pa": "Personal accident coverage",
+    "transit": "Transit coverage",
+    "yes250k": "Yes (€25)",
+    "no": "No",
+    "validationcoverageOr": "Please select either Emergency Medical Coverage or Personal Accident (PA) Coverage, or both.",
+    "validationzoneDaysSum": "Green Zone Days + Amber Zone Days + Red Zone Days must equal Total Days.",
+    "submissionAlert": "Form submitted successfully!",
+    "travelStartDateRequired": "Travel Start Date is required.",
+    "travelEndDateRequired": "Travel End Date is required.",
+    "travelEndDateAfterStart": "Travel End Date must be after Travel Start Date.",
+    "greenZoneDaysRequired": "Green Zone Days is required. Enter 0 if none.",
+    "greenZoneDaysInvalid": "Green zone days must be at least 0.",
+    "phoneRequired": "Phone Number is required.",
+    "phoneInvalid": "Phone Number is invalid.",
+    "selectCity": "Select City",
+    "ageLimit": {
+      "title": "Age Limit",
+      "description": "We do not cover individuals aged 70 or older. If you still wish to proceed with an inquiry, please contact membership@compasspoint-assist.com.",
+      "confirm": "Okay"
+    },
+    "validation": {
+      "required": "This field is required.",
+      "fieldRequired": "This field is required.",
+      "stringEmpty": "This field is required.",
+      "namePartSchema": {
+        "empty": "This field is required.",
+        "required": "This field is required."
+      },
+      "primaryCitiesRegionsUkraine": {
+        "empty": "Please select at least one city.",
+        "required": "Please select at least one city."
+      },
+      "consentForAdditionalRequired": "You must confirm you have consent from the travellers.",
+      "consentForAdditionalTravellers": "I have consent for traveller details.",
+      "traveller": {
+        "firstName": {
+          "empty": "Traveller First Name is required.",
+          "required": "Traveller First Name is required."
+        },
+        "lastName": {
+          "empty": "Traveller Last Name is required.",
+          "required": "Traveller Last Name is required."
+        },
+        "birthdate": {
+          "required": "Traveller Date of Birth is required.",
+          "empty": "Traveller Date of Birth is required.",
+          "format": "Traveller Date of Birth must be in YYYY-MM-DD format."
+        },
+        "passportExpiry": {
+          "format": "Passport Expiry Date must be in YYYY-MM-DD format.",
+          "future": "Passport Expiry Date must be in the future."
+        },
+        "atLeastOne": "At least one traveller is required."
+      },
+      "tripStartDate": {
+        "required": "Travel Start Date is required.",
+        "empty": "Travel Start Date is required."
+      },
+      "tripEndDate": {
+        "required": "Travel End Date is required.",
+        "empty": "Travel End Date is required.",
+        "greater": "Travel End Date must be after Travel Start Date."
+      },
+      "zoneDays": {
+        "green": {
+          "required": "Green Zone Days is required. Enter 0 if none.",
+          "base": "Green zone days is required.",
+          "min": "Green zone days must be at least 0."
+        },
+        "amber": {
+          "required": "Amber Zone Days is required. Enter 0 if none.",
+          "base": "Amber zone days is required.",
+          "min": "Amber zone days must be at least 0."
+        },
+        "red": {
+          "required": "Red Zone Days is required. Enter 0 if none.",
+          "base": "Red zone days is required.",
+          "min": "Red zone days must be at least 0."
+        }
+      },
+      "contact": {
+        "firstName": {
+          "empty": "First Name is required.",
+          "required": "First Name is required."
+        },
+        "lastName": {
+          "empty": "Last Name is required.",
+          "required": "Last Name is required."
+        },
+        "birthdate": {
+          "required": "Date of Birth is required.",
+          "empty": "Date of Birth is required.",
+          "format": "Date of Birth must be in YYYY-MM-DD format."
+        },
+        "passportExpiry": {
+          "format": "Primary Traveller Passport Expiry Date must be in YYYY-MM-DD format.",
+          "future": "Primary Traveller Passport Expiry Date must be in the future."
+        },
+
+        "phone": {
+          "empty": "Phone Number is required.",
+          "invalid": "Phone Number is invalid.",
+          "min": "Phone Number seems too short."
+        },
+        "whatsApp": {
+          "min": "WhatsApp Number seems too short (if provided)."
+        },
+        "email": {
+          "empty": "Email Address is required.",
+          "invalid": "Email must be a valid email."
+        },
+        "nationality": {
+          "required": "Nationality is required.",
+          "empty": "Nationality is required."
+        },
+        "cityOfResidence": {
+          "empty": "Country of Residence is required.",
+          "required": "Country of Residence is required."
+        }
+      },
+      "tripCountries": {
+        "itemRequired": "Country Travelling To is required.",
+        "itemEmpty": "Country Travelling To cannot be empty.",
+        "base": "Country Travelling To is required.",
+        "min": "Please select one Country Travelling To.",
+        "max": "Please select only one Country Travelling To."
+      },
+      "ukraineDeparture": {
+        "greater": "Departure from Ukraine must be after Arrival in Ukraine."
+      },
+      "tripCity": {
+        "nameEmpty": "City Name is required.",
+        "zoneTypeRequired": "Zone type for city is required."
+      },
+      "tripPurpose": {
+        "required": "Purpose of Travel is required.",
+        "invalid": "Invalid Purpose of Travel."
+      },
+      "emergencyContact": {
+        "firstName": {
+          "empty": "Emergency Contact First Name is required.",
+          "required": "Emergency Contact First Name is required."
+        },
+        "lastName": {
+          "empty": "Emergency Contact Last Name is required.",
+          "required": "Emergency Contact Last Name is required."
+        },
+        "phone": {
+          "empty": "Emergency Contact Number is required.",
+          "min": "Emergency Contact Number seems too short."
+        },
+        "relation": {
+          "empty": "Emergency Contact Relationship is required."
+        }
+      },
+      "medical": {
+        "conditionEmpty": "Condition cannot be empty",
+        "conditionsMin": "Please list at least one pre-existing medical condition or uncheck the box.",
+        "conditionsRequired": "Please list pre-existing medical conditions.",
+        "allergyEmpty": "Allergy cannot be empty",
+        "allergiesMin": "Please list at least one allergy or uncheck the box.",
+        "allergiesRequired": "Please list allergies.",
+        "medicationEmpty": "Medication cannot be empty",
+        "medicationsMin": "Please list at least one current medication or uncheck the box.",
+        "medicationsRequired": "Please list current medications."
+      },
+      "consent": {
+        "invalid": "You must give consent to share medical info.",
+        "required": "Consent is required."
+      },
+      "organisation": {
+        "required": "Organization is required.",
+        "empty": "Organization cannot be empty."
+      },
+      "stayName": {
+        "required": "Hotel/Accommodation Name is required.",
+        "empty": "Hotel/Accommodation Name cannot be empty."
+      },
+      "primaryRegionUkraine": {
+        "required": "Primary Region or Oblast is required.",
+        "empty": "Primary Region or Oblast cannot be empty."
+      },
+      "primaryCityUkraine": {
+        "required": "Primary City is required.",
+        "empty": "Primary City cannot be empty."
+      },
+      "zoneDaysSum": "The sum of Green, Amber, and Red Zone Days ({sumOfZoneDays}) must equal the Total Travel Days ({totalCalculatedDays}). Please adjust.",
+      "coverageOr": "Please select either Emergency Medical Coverage or Personal Accident (PA) Coverage, or both."
+    },
+    "options": {
+      "tripPurposes": {
+        "BUSINESS": "Business",
+        "HUMANITARIAN_WORK": "Humanitarian Work",
+        "JOURNALISM": "Journalism",
+        "MEDICAL": "Medical",
+        "EDUCATION": "Education",
+        "PERSONAL": "Personal",
+        "OTHER": "Other"
+      },
+      "emergencyMedicalCoverage": {
+        "none": "No Medical Coverage",
+        "level": "{amount}"
+      },
+      "personalAccidentCoverage": {
+        "none": "Select personal accident coverage",
+        "level": "{amount}",
+        "25000": "€25,000",
+        "50000": "€50,000",
+        "100000": "€100,000",
+        "150000": "€150,000",
+        "250000": "€250,000"
+      }
+    },
+    "step1": {
+      "yourDetails": "Your Details",
+      "primaryTraveller": "Primary Traveller",
+      "fullName": "Full Name",
+      "contactLastName": "Last Name",
+      "contactFirstName": "First Name",
+      "dob": "Date of Birth",
+      "phoneNumber": "Phone Number",
+      "whatsapp": "WhatsApp (optional)",
+      "enterNumber": "Enter number",
+      "email": "Email Address",
+      "nationality": "Nationality",
+      "selectNationality": "Select nationality",
+      "cityOfResidence": "City of Residence",
+      "countryTravellingTo": "Country Travelling To",
+      "countryOfResidence": "Country of Residence",
+      "selectCountry": "Select country",
+      "expiryDate": "Passport Expiry Date",
+      "passportNumber": "Passport Number",
+      "enterPassportNumber": "Enter passport number",
+      "selectPassportExpiry": "Select passport expiry date",
+      "whatsappSameAsPhone": "WhatsApp same as phone number",
+      "additionalTraveller": "Additional Traveller",
+      "addAdditionalTraveller": "+ Add Additional Traveller",
+      "remove": "Remove",
+      "consentForAdditionalTravellers": "I confirm I have the traveler's consent to provide their personal information and purchase this membership on their behalf.",
+      "purchaseContextSelf": "Yes, I am the traveler.",
+      "purchaseContextOther": "No, I am purchasing this membership for someone else.",
+      "purchaseContextLabel": "Are you the traveler?",
+      "address": "Address",
+      "zip": "ZIP Code",
+      "addressPlaceholder": "Enter address",
+      "zipPlaceholder": "Enter ZIP code",
+      "note": "Note: When purchasing additional policies for other travelers, please ensure that travel dates and travel areas match those of the primary traveler. Travel dates and areas cannot differ between travelers within the same membership, as risk zones and coverage depend on consistent itineraries.If the travel dates or areas differ, a separate membership must be created."
+    },
+    "step2": {
+      "title": "Tell Us About Your Trip",
+      "primaryCities": "Primary Region/Oblast",
+      "tripPurpose": "Purpose of Travel",
+      "selectTripPurpose": "Select Purpose",
+      "stayName": "Hotel or Accommodation",
+      "companyName": "Organization",
+      "citiesVisitingTitle": "Cities Visiting",
+      "cityName": "City {{index}} Name",
+      "enterCityName": "Enter city name ",
+      "addCity": "+ Add City",
+      "remove": "Remove",
+      "primaryRegion": "Region or Oblast",
+      "primaryCity": "Select city",
+      "cityOrTown": "City or Town",
+      "selectRegion": "Select Region or Oblast"
+    },
+    "step3": {
+      "title": "Emergency Contact Information",
+      "contactName": "Contact Name",
+      "contactNumber": "Contact Number",
+      "codePlaceholder": "Code",
+      "numberPlaceholder": "Enter number",
+      "relationship": "Relationship",
+      "optionalMedicalTitle": "Optional Medical Info (Confidential):",
+      "preExistingConditions": "Pre-existing Medical Conditions",
+      "listConditions": "List Conditions",
+      "allergies": "Allergies",
+      "listAllergies": "List Allergies",
+      "currentMedications": "Current Medications",
+      "listMedications": "List Medications",
+      "bloodType": "Blood Type (Optional)",
+      "specialAssistance": "Special Assistance Requirements (Optional)"
+    },
+    "step4": {
+      "summaryOfCoverage": {
+        "title": "Summary of Coverage",
+        "travelDates": "Travel Dates: ",
+        "totalRiskZoneDays": "Total Risk Zone Days: ",
+        "riskZoneBreakdown": "Risk Zone Breakdown",
+        "traveller": "Traveler",
+        "zone": {
+          "green": "Green zone days",
+          "amber": "Amber zone days",
+          "red": "Red zone days"
+        },
+        "coverageSelected": "Coverage Selected",
+        "coverage": {
+          "medical": "Eemergency medical coverage",
+          "pa": "Personal accident coverage",
+          "transit": "Transit coverage"
+        },
+        "totalQuote": "Total Amount",
+        "note": "Note - pre existing medical condition will not be covered"
+      },
+      "insuredDetails": {
+        "title": "Member Details",
+        "primaryTraveller": "Primary Traveller 1",
+        "additionalTraveller": "Additional Traveller:",
+        "name": "Name",
+        "age": "Age",
+        "nationality": "Nationality"
+      },
+      "tripInformation": {
+        "title": "Trip Information",
+        "purpose": "Purpose",
+        "primaryRegions": "Primary Regions",
+        "citiesVisiting": "City Visiting"
+      },
+      "emergencyContact": {
+        "title": "Emergency Contact",
+        "name": "Name",
+        "number": "Number"
+      },
+      "affiliateCode": {
+        "label": "Affiliate Code (Optional)"
+      },
+      "consent": {
+        "label": "I consent to the sharing of my medical information in an emergency and authorize the collection, storage, and use of my personal information for that purpose."
+      }
+    },
+    "actions": {
+      "back": "Back",
+      "continue": "Continue",
+      "modifyChoices": "Modify Choices",
+      "confirm": "Confirm & Purchase",
+      "processing": "Processing...",
+      "getQuote": "Get Quote"
+    }
+  }
+}
