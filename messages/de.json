@@ -275,7 +275,8 @@
         "MEDICAL": "Medizinisch",
         "EDUCATION": "Bildung",
         "PERSONAL": "Privat",
-        "OTHER": "Sonstiges"
+        "OTHER": "Sonstiges",
+        "GOVERNMENT": "Nicht-Gouvernementsorganisation (NGO)"
       },
       "emergencyMedicalCoverage": {
         "none": "Keine medizinische Versicherung",

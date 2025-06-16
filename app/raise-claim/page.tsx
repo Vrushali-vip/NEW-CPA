@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/hooks/useTranslation";
 import dayjs from "dayjs";
 
-// --- Schema ---
 const claimSchema = Joi.object({
   policy_number: Joi.string().required().messages({
     "any.required": "Policy number is required",
@@ -84,7 +83,6 @@ export default function RaiseClaimPage() {
   const { register, handleSubmit, control, formState } = form;
 
   const onSubmit = (data: ClaimFormValues) => {
-    // You can handle file uploads here as needed
     setSubmitted(true);
     console.log("Claim Submitted:", data);
   };
@@ -147,6 +145,8 @@ export default function RaiseClaimPage() {
                 name="incident_description"
                 register={register}
                 error={formState.errors.incident_description}
+                placeholder={t("raiseClaim.incidentDescription")}
+                rows={4}
               />
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">

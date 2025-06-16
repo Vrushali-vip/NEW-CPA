@@ -159,6 +159,81 @@
 //   );
 // }
 
+// "use client";
+
+// import Image from "next/image";
+// import { useTranslations } from "next-intl";
+// import { useEffect, useState } from "react";
+
+// type NavbarProps = {
+//   scrollToArticles: () => void;
+// };
+
+// export default function Navbar({ scrollToArticles }: NavbarProps) {
+//   const t = useTranslations("navbar");
+//   const [locale, setLocale] = useState("en");
+
+//   useEffect(() => {
+//     const stored = localStorage.getItem("locale") || "en";
+//     setLocale(stored);
+//   }, []);
+
+//   const changeLanguage = async (lang: string) => {
+//     localStorage.setItem("locale", lang);
+//     window.location.reload(); 
+//   };
+
+//   return (
+//     <header className="w-full shadow-sm bg-[#1A2C50]">
+//       <div className="mx-auto flex items-center justify-between pr-7">
+//         <div className="bg-white flex items-center justify-center">
+//           <Image
+//             src="/compass-point-assist-logo.png"
+//             alt="Company Logo"
+//             width={300}
+//             height={300}
+//             className="rounded-md py-2 px-2"
+//           />
+//         </div>
+
+//         <div className="flex items-center justify-between flex-grow">
+//           <div className="ml-8">
+//             <button
+              
+//               className="text-xl font-semibold font-monteserrat text-[#ECCBAE]"
+//               onClick={scrollToArticles}
+//             >
+//               {t("articles")}
+//             </button>
+//           </div>
+
+//           <div className="flex items-center text-md text-[#ECCBAE] space-x-4 mr-5">
+//             <button
+//               onClick={() => changeLanguage("en")}
+//               className={`text-xl font-semibold font-monteserrat transition-all duration-200 ${
+//                 locale === "en" ? "opacity-50" : "opacity-100"
+//               }`}
+//             >
+//               {t("language.en")}
+//             </button>
+
+//             <div className="w-[3px] h-4 bg-[#ECCBAE] mx-4" />
+
+//             <button
+//               onClick={() => changeLanguage("de")}
+//               className={`text-xl font-semibold font-monteserrat transition-all duration-200 ${
+//                 locale === "de" ? "opacity-50" : "opacity-100"
+//               }`}
+//             >
+//               {t("language.de")}
+//             </button>
+//           </div>
+//         </div>
+//       </div>
+//     </header>
+//   );
+// }
+
 "use client";
 
 import Image from "next/image";
@@ -192,36 +267,35 @@ export default function Navbar({ scrollToArticles }: NavbarProps) {
             alt="Company Logo"
             width={300}
             height={300}
-            className="rounded-md py-2 px-2"
+            className="rounded-md py-2 px-2 h-10 md:h-16 w-auto"
           />
         </div>
 
         <div className="flex items-center justify-between flex-grow">
           <div className="ml-8">
             <button
-              
-              className="text-xl font-semibold font-monteserrat text-[#ECCBAE]"
+              className="text-sm md:text-xl font-semibold font-monteserrat text-[#ECCBAE]"
               onClick={scrollToArticles}
             >
               {t("articles")}
             </button>
           </div>
 
-          <div className="flex items-center text-md text-[#ECCBAE] space-x-4 mr-5">
+          <div className="flex items-center text-sm md:text-base text-[#ECCBAE] space-x-2 md:space-x-4 mr-5">
             <button
               onClick={() => changeLanguage("en")}
-              className={`text-xl font-semibold font-monteserrat transition-all duration-200 ${
+              className={`text-sm md:text-xl font-semibold font-monteserrat transition-all duration-200 ${
                 locale === "en" ? "opacity-50" : "opacity-100"
               }`}
             >
               {t("language.en")}
             </button>
 
-            <div className="w-[3px] h-4 bg-[#ECCBAE] mx-4" />
+            <div className="w-[2px] h-4 bg-[#ECCBAE] mx-2 md:mx-4" />
 
             <button
               onClick={() => changeLanguage("de")}
-              className={`text-xl font-semibold font-monteserrat transition-all duration-200 ${
+              className={`text-sm md:text-xl font-semibold font-monteserrat transition-all duration-200 ${
                 locale === "de" ? "opacity-50" : "opacity-100"
               }`}
             >

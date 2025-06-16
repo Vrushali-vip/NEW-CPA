@@ -277,7 +277,8 @@
         "MEDICAL": "Medical",
         "EDUCATION": "Education",
         "PERSONAL": "Personal",
-        "OTHER": "Other"
+        "OTHER": "Other",
+        "GOVERNMENT": "Non Governmental Organisation (NGO)"
       },
       "emergencyMedicalCoverage": {
         "none": "No Medical Coverage",
@@ -323,9 +324,13 @@
       "purchaseContextOther": "No, I am purchasing this membership for someone else.",
       "purchaseContextLabel": "Are you the traveler?",
       "address": "Address",
-      "zip": "ZIP Code",
+      "zip": "Zip Code / Postal code",
+      "city": "City",
+      "state": "State",
       "addressPlaceholder": "Enter address",
       "zipPlaceholder": "Enter ZIP code",
+      "cityPlaceholder": "Enter city name",
+      "statePlaceholder": "Enter state name",
       "note": "Note: When purchasing additional policies for other travelers, please ensure that travel dates and travel areas match those of the primary traveler. Travel dates and areas cannot differ between travelers within the same membership, as risk zones and coverage depend on consistent itineraries.If the travel dates or areas differ, a separate membership must be created."
     },
     "step2": {

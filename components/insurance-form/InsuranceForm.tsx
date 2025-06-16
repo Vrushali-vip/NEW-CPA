@@ -1184,7 +1184,8 @@
 //     if (!overallValidationPassed) {
 //       const fieldsToSearchForErrors = Array.from(new Set([...currentStepFields, ...partFieldsToValidate]));
 //       let firstErrorKeyFound: Path<InsuranceFormValues> | undefined = fieldsToSearchForErrors.find(fieldName => getError(fieldName) !== undefined);
-//       if (!firstErrorKeyFound && step === 1 && formState.errors.travellers) {
+//       if (!firstErrorKeyFound && 
+//  && formState.errors.travellers) {
 //         const travellerErrors = formState.errors.travellers;
 //         if (Array.isArray(travellerErrors)) {
 //           for (let i = 0; i < travellerErrors.length; i++) {
@@ -2063,7 +2064,8 @@ import {
 import {
   InputWithLabel,
   SelectWithLabel,
-  DatePickerField
+  DatePickerField,
+  TextareaWithLabel
 } from "./FormFields";
 import { format as formatDateFn } from "date-fns";
 import BirthDateField from "../form/BirthDateField";
@@ -2075,6 +2077,7 @@ import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { Info } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "../ui/alert-dialog";
+import { TooltipWrapperMobileDesktop } from "../ui/TooltipWrapperMobileDesktop";
 
 type Integer = number & { __brand: 'integer' };
 
@@ -2489,6 +2492,16 @@ export default function InsuranceForm() {
   const { t } = useTranslation();
   const { getValidationMessage } = useValidationMessages();
 
+  const [isMobile, setIsMobile] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
   const [ageLimitExceeded, setAgeLimitExceeded] = useState(false);
   const [ageAlertOpen, setAgeAlertOpen] = useState(false);
 
@@ -2526,8 +2539,9 @@ export default function InsuranceForm() {
             return true;
           }
         }
-      } catch (e) {
-        // Optionally handle error
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error) {
+        console.log(error);
       }
       await new Promise(resolve => setTimeout(resolve, delay));
       attempts++;
@@ -2557,7 +2571,7 @@ export default function InsuranceForm() {
         first_name: "", last_name: "", birthdate: "", passport_number: "", passport_expiry_date: "", email: "",
         nationality: "",
         address: "",
-        zip: ""
+        zip: "", phone_code: "", phone_number: "",
       }],
       arrival_in_ukraine: "", departure_from_ukraine: "",
       primary_cities_regions_ukraine: "", trip_cities: [], trip_purpose: "",
@@ -2593,6 +2607,15 @@ export default function InsuranceForm() {
     let changed = false;
     const newTraveller0 = { ...currentTravellers[0] };
 
+    if (newTraveller0.phone_code !== getValues("c_phone_code")) {
+      newTraveller0.phone_code = getValues("c_phone_code") || "";
+      changed = true;
+    }
+    if (newTraveller0.phone_number !== getValues("c_phone_number")) {
+      newTraveller0.phone_number = getValues("c_phone_number") || "";
+      changed = true;
+    }
+
     if (newTraveller0.address !== getValues("address")) {
       newTraveller0.address = getValues("address") || "";
       changed = true;
@@ -2616,6 +2639,8 @@ export default function InsuranceForm() {
       setValue("travellers", updatedTravellers, { shouldValidate: step === 1, shouldDirty: true });
     }
   }, [
+    watch("c_phone_code"),
+    watch("c_phone_number"),
     watch("address"),
     watch("zip"),
     watch("c_email"),
@@ -2629,7 +2654,7 @@ export default function InsuranceForm() {
     control, name: "travellers"
   });
 
-  const { fields: cityFields, append: appendCity, remove: removeCity } = useFieldArray<InsuranceFormValues, "trip_cities", "id">({
+  const {  } = useFieldArray<InsuranceFormValues, "trip_cities", "id">({
     control, name: "trip_cities"
   });
 
@@ -2911,11 +2936,11 @@ export default function InsuranceForm() {
         formValues.city_of_residence;
 
       if (!hasRequiredFieldsForQuote) {
-        setQuoteResult({
-          ok: false,
-          message: formValues.city_of_residence ? "Please fill all required trip and coverage details." : "Please select country of residence to get a quote.",
-          warnings: []
-        });
+        // setQuoteResult({
+        //   ok: false,
+        //   message: formValues.city_of_residence ? "fr" : "def",
+        //   warnings: []
+        // });
         return;
       }
 
@@ -3031,7 +3056,7 @@ export default function InsuranceForm() {
     localStorage.setItem('insuranceFormData', JSON.stringify(existing));
     console.log("Form Data (JSON):\n" + JSON.stringify(submission, null, 2));
 
-    const invoiceNumber = `INS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    // const invoiceNumber = `INS-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 
     // Build the API payload you want to send
@@ -3045,7 +3070,8 @@ export default function InsuranceForm() {
     const apiPayload = {
       trip_start_date: allData.trip_start_date ? new Date(allData.trip_start_date + "T00:00:00").toISOString() : "",
       trip_end_date: allData.trip_end_date ? new Date(allData.trip_end_date + "T00:00:00").toISOString() : "",
-      travellers: (allData.travellers || []).map((t: any, idx: number) => ({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      travellers: (allData.travellers || []).map((t: any,) => ({
         firstName: t.first_name || allData.c_first_name || "",
         lastName: t.last_name || allData.c_last_name || "",
         dateOfBirth: t.birthdate || allData.c_birthdate || "",
@@ -3081,6 +3107,7 @@ export default function InsuranceForm() {
       purpose: allData.trip_purpose || "",
       accomodationName: allData.stay_name || "",
       companyName: allData.company_name || "",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       cities: (allData.trip_cities || []).map((c: any) => c.name).filter(Boolean),
       medicalConditions: (allData.medical_conditions || []).join(", "),
       allergies: (allData.allergies || []).join(", "),
@@ -3103,12 +3130,15 @@ export default function InsuranceForm() {
       }
       // Use the actual checkout data for Flywire
       const apiData = await apiRes.json();
+
       checkoutData = apiData.data;
-    } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error) {
+      console.log(error);
       alert("Network error submitting insurance data.");
       return;
     }
-    console.log(checkoutData);
+    // console.log(checkoutData);
     const flywireConfig = {
       /* env: "demo",
       recipientCode: "POP",
@@ -3154,47 +3184,48 @@ export default function InsuranceForm() {
       payerEmailNotifications: true,
       showLiveChat: true, */
 
-       env: "demo", // or use a value from your environment/config
+      env: "demo", // or use a value from your environment/config
       recipientCode: checkoutData.recipientCode,
       amount: checkoutData.amount?.toString() || "0.00",
-      currency: checkoutData.currency || "EUR",
+      currency: checkoutData.currency || "USD",
+      // payer: checkoutData.payer,
 
-        // Payer information
-        firstName: checkoutData.payer?.firstName || "",
-        lastName: checkoutData.payer?.lastName || "",
-        email: checkoutData.payer?.email || "",
-        phone: checkoutData.payer?.phone || "",
-        address: checkoutData.payer?.address || "",
-        city: checkoutData.payer?.city || "",
-        state: checkoutData.payer?.state || "",
-        zip: checkoutData.payer?.zip || "",
-        country: checkoutData.payer?.country || "",
+      // Payer information
+      firstName: checkoutData.payer?.firstName || "",
+      lastName: checkoutData.payer?.lastName || "",
+      email: checkoutData.payer?.email || "",
+      phone: checkoutData.payer?.phone || "",
+      address: checkoutData.payer?.address || "",
+      city: checkoutData.payer?.city || "",
+      state: checkoutData.payer?.state || "",
+      zip: checkoutData.payer?.zip || "",
+      country: checkoutData.payer?.country || "",
 
-        // Metadata and recipient fields
-        recipientFields: {
-          checkoutId: checkoutData.metadata?.checkoutId || "",
-          policy_type: "Travel Insurance",
-          // Add other fields as needed from your form or checkoutData
-        },
+      // Metadata and recipient fields
+      recipientFields: {
+        checkoutId: checkoutData.metadata?.checkoutId || "",
+        nonce: checkoutData.metadata?.nonce || "",
+        // Add other fields as needed from your form or checkoutData
+      },
+      // metadata: checkoutData.metadata,
+      paymentOptionsConfig: {
+        sort: [
+          { currency: ["local", "foreign"] },
+          { amount: "asc" },
+          { type: ["bank_transfer", "credit_card", "online"] }
+        ]
+      },
 
-        paymentOptionsConfig: {
-          sort: [
-            { currency: ["local", "foreign"] },
-            { amount: "asc" },
-            { type: ["bank_transfer", "credit_card", "online"] }
-          ]
-        },
+      callbackId: checkoutData.callbackId,
+      callbackUrl: "https://webhook-test.com/78f1577fe7a5ae88ab0063898e3e58a4",
+      callbackVersion: checkoutData.callbackVersion,
 
-        callbackId: checkoutData.callbackId,
-        callbackUrl: checkoutData.callbackUrl,
-        callbackVersion: checkoutData.callbackVersion,
+      payerEmailNotifications: checkoutData.payerEmailNotifications,
+      showLiveChat: true,
 
-        payerEmailNotifications: checkoutData.payerEmailNotifications,
-        showLiveChat: true,
-
-        requestPayerInfo: true,
-        requestRecipientInfo: checkoutData.requestRecipientInfo,
-        // returnUrl: `${window.location.origin}/thank-you`,
+      requestPayerInfo: true,
+      requestRecipientInfo: checkoutData.requestRecipientInfo,
+      // returnUrl: `${window.location.origin}/thank-you`,
 
       onInvalidInput: function (errors: FlywireError[]) {
         errors.forEach(function (error: FlywireError) {
@@ -3239,7 +3270,7 @@ export default function InsuranceForm() {
       }, */
 
       // Inside flywireConfig
-      onCompleteCallback: async function (paymentResult: any) {
+      onCompleteCallback: async function ( ) {
         setIsProcessingPayment(true);
 
         // Use the checkoutId from your checkoutData
@@ -3447,11 +3478,11 @@ export default function InsuranceForm() {
   const watchedPathsForSummary = ["trip_start_date", "trip_end_date", "emergency_medical_coverage", "personal_accident_coverage_level", "add_transit_coverage", "c_first_name", "c_last_name", "c_birthdate", "c_nationality", "trip_purpose", "primary_cities_regions_ukraine", "emergency_contact_first_name", "emergency_contact_last_name", "emergency_contact_phone", "c_passport_number", "c_passport_expiry_date", "city_of_residence"] as const;
   const watchedValuesForSummary = watch(watchedPathsForSummary);
   const watchedTravellersForSummary = watch("travellers");
-  const watchedTripCitiesForSummary = watch("trip_cities");
+  // const watchedTripCitiesForSummary = watch("trip_cities");
 
 
-  const getEmergencyMedicalLabel = (value: string) => currentEmergencyMedicalCoverageOptions.find(opt => opt.value === value)?.label || value || "N/A";
-  const getPALabel = (value: string) => currentPersonalAccidentCoverageOptions.find(opt => opt.value === value)?.label || value || "N/A";
+  // const getEmergencyMedicalLabel = (value: string) => currentEmergencyMedicalCoverageOptions.find(opt => opt.value === value)?.label || value || "N/A";
+  // const getPALabel = (value: string) => currentPersonalAccidentCoverageOptions.find(opt => opt.value === value)?.label || value || "N/A";
   const getTripPurposeLabel = (value: string) => currentTripPurposes.find(opt => opt.value === value)?.label || value || "N/A";
   const getNationalityLabel = (value: string) => currentNationalityOptions.find(opt => opt.value === value)?.label || value || "N/A";
   const getCountryOfResidenceLabel = (value: string) => currentCountryOptions.find(opt => opt.value === value)?.label || value || "N/A";
@@ -3484,7 +3515,7 @@ export default function InsuranceForm() {
     const perTravellerMedical = quoteResult.data.medicalCoverAmount / perTravellerCount;
     const perTravellerPA = quoteResult.data.paCoverAmount / perTravellerCount;
     const perTravellerTransit = quoteResult.data.totalAmount / perTravellerCount - perTravellerMedical - perTravellerPA;
-    return travellers.map((traveller, idx) => ({
+    return travellers.map((traveller) => ({
       name: formatFullName(traveller.first_name, traveller.last_name),
       medical: perTravellerMedical,
       pa: perTravellerPA,
@@ -3594,7 +3625,7 @@ export default function InsuranceForm() {
                   </div>
                   <SelectWithLabel label={t('insuranceForm.step1.countryTravellingTo')} name="trip_countries.0" control={control} options={currentCountryTravellingToOptions} placeholder={t('insuranceForm.step1.selectCountry')} error={getError("trip_countries.0" as Path<InsuranceFormValues>) || getError("trip_countries" as Path<InsuranceFormValues>)} />
                   {/* <h3 className="text-xl font-semibold mb-1 text-[#1A2C50]">{t("insuranceForm.riskZoneDays")}</h3> */}
-                  <h3 className="text-xl font-semibold mb-1 text-[#1A2C50] flex items-center">
+                  {/* <h3 className="text-xl font-semibold mb-1 text-[#1A2C50] flex items-center">
                     {t("insuranceForm.riskZoneDays")}
                     <TooltipProvider>
                       <Tooltip>
@@ -3611,6 +3642,31 @@ export default function InsuranceForm() {
                             {t("insuranceForm.riskZoneDaysTooltip")}
                           </div>
                         </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </h3> */}
+                  <h3 className="text-xl font-semibold mb-1 text-[#1A2C50] flex items-center">
+                    {t("insuranceForm.riskZoneDays")}
+                    <TooltipProvider>
+                      <Tooltip open={isMobile ? open : undefined} onOpenChange={setOpen}>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            className="ml-2 cursor-pointer"
+                            onClick={() => isMobile && setOpen(!open)}
+                          >
+                            <Info className="w-5 h-5" aria-label="Info" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" align="start" sideOffset={4}>
+                          <div
+                            className="bg-muted px-3 py-2 text-sm shadow max-w-[60vw] md:max-w-[470px]"
+                            style={{ whiteSpace: "pre-line", wordBreak: "break-word" }}
+                          >
+                            {t("insuranceForm.riskZoneDaysTooltip")}
+                          </div>
+                        </TooltipContent>
+
                       </Tooltip>
                     </TooltipProvider>
                   </h3>
@@ -3632,9 +3688,7 @@ export default function InsuranceForm() {
                     />
                   </div>
                   <h3 className="text-xl font-semibold mb-4 text-[#1A2C50]">{t("insuranceForm.coverageOptions")}</h3>
-                  <div className="space-y-4 mb-6">
-                    {/* <SelectWithLabel label={t("insuranceForm.emergencyMedical")} name="emergency_medical_coverage" control={control} options={currentEmergencyMedicalCoverageOptions} placeholder={t("insuranceForm.selectMedicalCoverage")} error={getError("emergency_medical_coverage")} readOnly={coverageDisabled || !watch("city_of_residence")} />
-                    <SelectWithLabel label={t("insuranceForm.personalAccident")} name="personal_accident_coverage_level" control={control} options={currentPersonalAccidentCoverageOptions} placeholder={t("insuranceForm.selectPACoverage")} error={getError("personal_accident_coverage_level")} readOnly={coverageDisabled || !watch("city_of_residence")} /> */}
+                  {/* <div className="space-y-4 mb-6">
                     <div className="grid grid-cols-2 gap-6">
                       <SelectWithLabel
                         label={t("insuranceForm.emergencyMedical")}
@@ -3693,8 +3747,58 @@ export default function InsuranceForm() {
                         </Tooltip>
                       </div>
                     </TooltipProvider>
+                  </div> */}
+
+                  <div className="space-y-4 mb-6">
+                    {/* Select dropdowns: stack on mobile, side-by-side on desktop */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <SelectWithLabel
+                        label={t("insuranceForm.emergencyMedical")}
+                        name="emergency_medical_coverage"
+                        control={control}
+                        options={currentEmergencyMedicalCoverageOptions}
+                        placeholder={t("insuranceForm.selectMedicalCoverage")}
+                        error={getError("emergency_medical_coverage")}
+                        readOnly={coverageDisabled || !watch("city_of_residence")}
+                      />
+
+                      <SelectWithLabel
+                        label={t("insuranceForm.personalAccident")}
+                        name="personal_accident_coverage_level"
+                        control={control}
+                        options={currentPersonalAccidentCoverageOptions}
+                        placeholder={t("insuranceForm.selectPACoverage")}
+                        error={getError("personal_accident_coverage_level")}
+                        readOnly={coverageDisabled || !watch("city_of_residence")}
+                      />
+                    </div>
+
+                    {/* Checkbox + Label + Tooltip all in one horizontal line */}
+                    <TooltipProvider>
+                      <div className="flex items-center space-x-2">
+                        <Controller
+                          name="add_transit_coverage"
+                          control={control}
+                          render={({ field }) => (
+                            <Checkbox
+                              id="add_transit_coverage"
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          )}
+                        />
+
+                        <Label htmlFor="add_transit_coverage">
+                          {t("insuranceForm.addTransitCover")} <strong>€25</strong>
+                        </Label>
+
+                        {/* Tooltip trigger as button for mobile */}
+                        <TooltipWrapperMobileDesktop t={t} />
+                      </div>
+                    </TooltipProvider>
                   </div>
-                  <div className="mt-4 pt-6 border-t">
+
+                  {/* <div className="mt-4 pt-6 border-t">
                     <div className="mt-4 p-6 bg-gray-50 rounded-md border">
                       <h3 className="text-xl font-semibold text-[#1A2C50] mb-2">
                         {t("insuranceForm.quoteSummary")}
@@ -3723,8 +3827,47 @@ export default function InsuranceForm() {
                           : t("insuranceForm.no")}
                       </p>
                     </div>
+                  </div> */}
+                  <div className="mt-4 pt-6 border-t">
+                    <div className="mt-4 p-6 bg-gray-50 rounded-md border">
+                      <h3 className="text-xl font-semibold text-[#1A2C50] mb-2">
+                        {t("insuranceForm.quoteSummary")}
+                      </h3>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-2xl font-bold text-[#00BBD3]">Total quote</span>
+                        <span className="text-2xl font-bold text-[#00BBD3]">{renderQuoteDisplay()}</span>
+                      </div>
+
+                      {renderQuoteWarnings()}
+
+                      {(() => {
+                        const travellerBreakdown = getTravellerBreakdown();
+                        const numberOfTravellers = travellerBreakdown.length;
+                        const medicalCoverage = travellerBreakdown[0]?.medical || 0;
+                        const paCoverage = travellerBreakdown[0]?.pa || 0;
+
+                        return (
+                          <div className="">
+                            <div className="flex justify-between items-center">
+                              <span>{t("insuranceForm.step4.summaryOfCoverage.coverage.medical")}: {formatEuro(medicalCoverage)} × {numberOfTravellers} traveller</span>
+                              <span className="font-medium">{formatEuro(medicalCoverage * numberOfTravellers)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span>{t("insuranceForm.step4.summaryOfCoverage.coverage.pa")}: {formatEuro(paCoverage)} × {numberOfTravellers} traveller</span>
+                              <span className="font-medium">{formatEuro(paCoverage * numberOfTravellers)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span>{t("insuranceForm.step4.summaryOfCoverage.coverage.transit")}</span>
+                              <span className="font-medium">{watchedValuesForSummary[4] ? "€25.00" : "€0.00"}</span>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
                   </div>
                 </>
+
               )}
               {step === 1 && (
                 <>
@@ -3780,22 +3923,12 @@ export default function InsuranceForm() {
                     )}
                   </div>
                   <h3 className="text-lg font-semibold mb-3 text-[#1A2C50]">{t('insuranceForm.step1.primaryTraveller')}</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div><div className="flex items-start gap-2"><div className="flex-grow"><InputWithLabel label={t("insuranceForm.step1.contactFirstName")} name="c_first_name" register={register} placeholder={t("insuranceForm.step1.contactFirstName")} error={getError("c_first_name") || getError("travellers.0.first_name" as Path<InsuranceFormValues>)} /></div><div className="flex-grow"><InputWithLabel label={t("insuranceForm.step1.contactLastName")} name="c_last_name" register={register} placeholder={t("insuranceForm.step1.contactLastName")} error={getError("c_last_name") || getError("travellers.0.last_name" as Path<InsuranceFormValues>)} /></div></div></div>
                     <div className="mt-1.5"><BirthDateField label={t('insuranceForm.step1.dob')} name="c_birthdate" control={control} getError={getError} watch={watch} /></div>
                     <div><p className="text-sm font-medium text-gray-900 mb-1 mt-1">{t('insuranceForm.step1.phoneNumber')}</p><div className="flex items-start gap-2"><div className="w-1/3 shrink-0"><SelectWithLabel control={control} name="c_phone_code" label="" options={currentCountryCodeOptions} placeholder={t("insuranceForm.step3.codePlaceholder")} error={getError("c_phone_code")} /></div><div className="flex-grow"><InputWithLabel label="" name="c_phone_number" type="tel" register={register} placeholder={t('insuranceForm.step1.enterNumber')} error={getError("c_phone_number")} /></div></div>{getError("c_phone") && <p className="text-sm text-red-500 mt-1">{getError("c_phone")?.message}</p>}</div>
                     <InputWithLabel label={t('insuranceForm.step1.email')} name="c_email" type="email" register={register} error={getError("c_email")} />
-                    <div className="md:col-span-2 mt-3"><div className="flex items-center space-x-2"><Controller name="c_is_whatsapp_same_as_phone" control={control} render={({ field }) => (<Checkbox id="c_is_whatsapp_same_as_phone" checked={field.value} onCheckedChange={field.onChange} />)} /><Label htmlFor="c_is_whatsapp_same_as_phone">{t("insuranceForm.step1.whatsappSameAsPhone")}</Label></div></div>
                     <div className="flex items-start gap-2">
-                      <div className="flex-grow">
-                        <InputWithLabel
-                          label={t("insuranceForm.step1.address")}
-                          name="address"
-                          register={register}
-                          placeholder={t("insuranceForm.step1.addressPlaceholder")}
-                          error={getError("address")}
-                        />
-                      </div>
                       <div className="flex-grow">
                         <InputWithLabel
                           label={t("insuranceForm.step1.zip")}
@@ -3806,7 +3939,163 @@ export default function InsuranceForm() {
                         />
                       </div>
                     </div>
+                    <InputWithLabel
+                      label={t("insuranceForm.step1.city")}
+                      name="city"
+                      register={register}
+                      placeholder={t("insuranceForm.step1.cityPlaceholder")}
+                      error={getError("city")}
+                    />
+                    <InputWithLabel
+                      label={t("insuranceForm.step1.state")}
+                      name="state"
+                      register={register}
+                      placeholder={t("insuranceForm.step1.statePlaceholder")}
+                      error={getError("state")}
+                    />
                     <SelectWithLabel label={t('insuranceForm.step1.nationality')} name="c_nationality" control={control} options={currentNationalityOptions} placeholder={t('insuranceForm.step1.selectNationality')} error={getError("c_nationality")} />
+                  </div>
+                  <div className="flex-grow">
+                    <InputWithLabel
+                      label={t("insuranceForm.step1.address")}
+                      name="address"
+                      register={register}
+                      placeholder={t("insuranceForm.step1.addressPlaceholder")}
+                      error={getError("address")}
+                    />
+                  </div> */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <div className="flex items-start gap-2">
+                        <div className="flex-grow">
+                          <InputWithLabel
+                            label={t("insuranceForm.step1.contactFirstName")}
+                            name="c_first_name"
+                            register={register}
+                            placeholder={t("insuranceForm.step1.contactFirstName")}
+                            error={
+                              getError("c_first_name") ||
+                              getError("travellers.0.first_name" as Path<InsuranceFormValues>)
+                            }
+                          />
+                        </div>
+                        <div className="flex-grow">
+                          <InputWithLabel
+                            label={t("insuranceForm.step1.contactLastName")}
+                            name="c_last_name"
+                            register={register}
+                            placeholder={t("insuranceForm.step1.contactLastName")}
+                            error={
+                              getError("c_last_name") ||
+                              getError("travellers.0.last_name" as Path<InsuranceFormValues>)
+                            }
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-1.5">
+                      <BirthDateField
+                        label={t("insuranceForm.step1.dob")}
+                        name="c_birthdate"
+                        control={control}
+                        getError={getError}
+                        watch={watch}
+                      />
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-medium text-gray-900 mb-1 mt-1">
+                        {t("insuranceForm.step1.phoneNumber")}
+                      </p>
+                      <div className="flex items-start gap-2">
+                        <div className="w-1/3 shrink-0">
+                          <SelectWithLabel
+                            control={control}
+                            name="c_phone_code"
+                            label=""
+                            options={currentCountryCodeOptions}
+                            placeholder={t("insuranceForm.step3.codePlaceholder")}
+                            error={getError("c_phone_code")}
+                          />
+                        </div>
+                        <div className="flex-grow">
+                          <InputWithLabel
+                            label=""
+                            name="c_phone_number"
+                            type="tel"
+                            register={register}
+                            placeholder={t("insuranceForm.step1.enterNumber")}
+                            error={getError("c_phone_number")}
+                          />
+                        </div>
+                      </div>
+                      {getError("c_phone") && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {getError("c_phone")?.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <InputWithLabel
+                      label={t("insuranceForm.step1.email")}
+                      name="c_email"
+                      type="email"
+                      register={register}
+                      error={getError("c_email")}
+                    />
+
+                    {/* 👇 Address full width, placed before ZIP */}
+                    <div className="md:col-span-2">
+                      <TextareaWithLabel
+                        label={t("insuranceForm.step1.address")}
+                        name="address"
+                        register={register}
+                        placeholder={t("insuranceForm.step1.addressPlaceholder")}
+                        error={getError("address")}
+                        rows={4}
+                      />
+                    </div>
+
+
+                    {/* <InputWithLabel
+                      label={t("insuranceForm.step1.city")}
+                      name="city"
+                      register={register}
+                      placeholder={t("insuranceForm.step1.cityPlaceholder")}
+                      error={getError("city")}
+                    /> */}
+
+                    <div className="flex items-start gap-2">
+                      <div className="flex-grow">
+                        <InputWithLabel
+                          label={t("insuranceForm.step1.zip")}
+                          name="zip"
+                          register={register}
+                          placeholder={t("insuranceForm.step1.zipPlaceholder")}
+                          error={getError("zip")}
+                        />
+                      </div>
+                    </div>
+
+
+
+                    {/* <InputWithLabel
+                      label={t("insuranceForm.step1.state")}
+                      name="state"
+                      register={register}
+                      placeholder={t("insuranceForm.step1.statePlaceholder")}
+                      error={getError("state")}
+                    /> */}
+
+                    <SelectWithLabel
+                      label={t("insuranceForm.step1.nationality")}
+                      name="c_nationality"
+                      control={control}
+                      options={currentNationalityOptions}
+                      placeholder={t("insuranceForm.step1.selectNationality")}
+                      error={getError("c_nationality")}
+                    />
                   </div>
 
                   <div className="mt-6 pt-6">
@@ -3834,12 +4123,12 @@ export default function InsuranceForm() {
                     return (
                       <div key={field.id} className="mt-6 pt-6 border-t">
                         <div className="flex justify-between items-center mb-3">
-                          <h3 className="text-lg font-semibold text-[#1A2C50]">{t(`insuranceForm.step1.additionalTraveller`)} #{index + 1}</h3>
+                          <h3 className="text-lg font-semibold text-[#1A2C50]">{t(`insuranceForm.step1.additionalTraveller`)} {index}</h3>
                           <Button type="button" variant="destructive" size="sm" onClick={() => removeTraveller(index)}>{t("insuranceForm.step1.remove")}</Button>
                         </div>
 
                         {/* Personal Details */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
                             <div className="flex items-start gap-2">
                               <div className="flex-grow">
@@ -3863,6 +4152,75 @@ export default function InsuranceForm() {
                             register={register}
                             error={getError(`travellers.${index}.email` as Path<InsuranceFormValues>)}
                           />
+                          <div className="flex items-start gap-2">
+                            <div className="w-1/3 shrink-0">
+                              <SelectWithLabel
+                                control={control}
+                                name={`travellers.${index}.phone_code` as Path<InsuranceFormValues>}
+                                label={t("insuranceForm.step3.contactNumber")}
+                                options={currentCountryCodeOptions}
+                                placeholder={t("insuranceForm.step3.codePlaceholder")}
+                                error={getError(`travellers.${index}.phone_code` as Path<InsuranceFormValues>)}
+                              />
+                            </div>
+                            <div className="flex-grow">
+                              <InputWithLabel
+                                label={t("insuranceForm.step1.phoneNumber")}
+                                name={`travellers.${index}.phone_number` as Path<InsuranceFormValues>}
+                                type="tel"
+                                register={register}
+                                placeholder={t("insuranceForm.step1.enterNumber")}
+                                error={getError(`travellers.${index}.phone_number` as Path<InsuranceFormValues>)}
+                              />
+                            </div>
+                          </div>
+
+                          <TextareaWithLabel
+                            label={t("insuranceForm.step1.address")}
+                            name={`travellers.${index}.address` as Path<InsuranceFormValues>}
+                            register={register}
+                            placeholder={t("insuranceForm.step1.addressPlaceholder")}
+                            error={getError(`travellers.${index}.address` as Path<InsuranceFormValues>)}
+                            rows={4}
+                          />
+
+                          <div className="flex items-start gap-6 md:col-span-2">
+
+                            <div className="flex-1">
+
+
+                              <InputWithLabel
+                                label={t("insuranceForm.step1.city")}
+                                name={`travellers.${index}.city` as Path<InsuranceFormValues>}
+                                register={register}
+                                placeholder={t("insuranceForm.step1.cityPlaceholder")}
+                                error={getError(`travellers.${index}.city` as Path<InsuranceFormValues>)}
+                              />
+
+
+
+                            </div>
+                            <div className="flex-1">
+                              <InputWithLabel
+                                label={t("insuranceForm.step1.zip")}
+                                name={`travellers.${index}.zip` as Path<InsuranceFormValues>}
+                                register={register}
+                                placeholder={t("insuranceForm.step1.zipPlaceholder")}
+                                error={getError(`travellers.${index}.zip` as Path<InsuranceFormValues>)}
+                              />
+                            </div>
+                          </div>
+
+
+
+
+                          <InputWithLabel
+                            label={t("insuranceForm.step1.state")}
+                            name={`travellers.${index}.state` as Path<InsuranceFormValues>}
+                            register={register}
+                            placeholder={t("insuranceForm.step1.statePlaceholder")}
+                            error={getError(`travellers.${index}.state` as Path<InsuranceFormValues>)}
+                          />
                           <SelectWithLabel
                             label={t('insuranceForm.step1.nationality')}
                             name={`travellers.${index}.nationality` as Path<InsuranceFormValues>}
@@ -3871,14 +4229,130 @@ export default function InsuranceForm() {
                             placeholder={t('insuranceForm.step1.selectNationality')}
                             error={getError(`travellers.${index}.nationality` as Path<InsuranceFormValues>)}
                           />
+
+
+
+                        </div> */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <div className="flex items-start gap-2">
+                              <div className="flex-grow">
+                                <InputWithLabel
+                                  label={t("insuranceForm.step1.contactFirstName")}
+                                  name={firstNamePath}
+                                  register={register}
+                                  placeholder={t("insuranceForm.step1.contactFirstName")}
+                                  error={getError(firstNamePath)}
+                                />
+                              </div>
+                              <div className="flex-grow">
+                                <InputWithLabel
+                                  label={t("insuranceForm.step1.contactLastName")}
+                                  name={lastNamePath}
+                                  register={register}
+                                  placeholder={t("insuranceForm.step1.contactLastName")}
+                                  error={getError(lastNamePath)}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="w-full mt-1.5">
+                            <BirthDateField
+                              label={t('insuranceForm.step1.dob')}
+                              name={birthdatePath}
+                              control={control}
+                              getError={getError}
+                              watch={watch}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                          <InputWithLabel
+                            label={t('insuranceForm.step1.email')}
+                            name={`travellers.${index}.email` as Path<InsuranceFormValues>}
+                            type="email"
+                            register={register}
+                            error={getError(`travellers.${index}.email` as Path<InsuranceFormValues>)}
+                          />
+                          {/* <div className="flex items-start gap-2">
+                            <div className="w-1/3 shrink-0">
+                              <SelectWithLabel
+                                control={control}
+                                name={`travellers.${index}.phone_code` as Path<InsuranceFormValues>}
+                                label={t("insuranceForm.step3.contactNumber")}
+                                options={currentCountryCodeOptions}
+                                placeholder={t("insuranceForm.step3.codePlaceholder")}
+                                error={getError(`travellers.${index}.phone_code` as Path<InsuranceFormValues>)}
+                              />
+                            </div>
+                            <div className="flex-grow">
+                              <InputWithLabel
+                                label={t("insuranceForm.step1.phoneNumber")}
+                                name={`travellers.${index}.phone_number` as Path<InsuranceFormValues>}
+                                type="tel"
+                                register={register}
+                                placeholder={t("insuranceForm.step1.enterNumber")}
+                                error={getError(`travellers.${index}.phone_number` as Path<InsuranceFormValues>)}
+                              />
+                            </div>
+                          </div> */}
+                          <div>
+                            <p className="text-sm font-medium text-gray-900 mb-1 mt-1">
+                              {t("insuranceForm.step1.phoneNumber")}
+                            </p>
+                            <div className="flex items-start gap-2">
+                              <div className="w-1/3 shrink-0">
+                                <SelectWithLabel
+                                  control={control}
+                                  name={`travellers.${index}.phone_code` as Path<InsuranceFormValues>}
+                                  label=""
+                                  options={currentCountryCodeOptions}
+                                  placeholder={t("insuranceForm.step3.codePlaceholder")}
+                                  error={getError(`travellers.${index}.phone_code` as Path<InsuranceFormValues>)}
+                                />
+                              </div>
+                              <div className="flex-grow">
+                                <InputWithLabel
+                                  label=""
+                                  name={`travellers.${index}.phone_number` as Path<InsuranceFormValues>}
+                                  type="tel"
+                                  register={register}
+                                  placeholder={t("insuranceForm.step1.enterNumber")}
+                                  error={getError(`travellers.${index}.phone_number` as Path<InsuranceFormValues>)}
+                                />
+                              </div>
+                            </div>
+                            {(getError(`travellers.${index}.phone_code` as Path<InsuranceFormValues>) ||
+                              getError(`travellers.${index}.phone_number` as Path<InsuranceFormValues>)) && (
+                                <p className="text-sm text-red-500 mt-1">
+                                  {getError(`travellers.${index}.phone_code` as Path<InsuranceFormValues>)?.message ||
+                                    getError(`travellers.${index}.phone_number` as Path<InsuranceFormValues>)?.message}
+                                </p>
+                              )}
+                          </div>
+                        </div>
+
+                        <div className="mt-6">
+                          <TextareaWithLabel
+                            label={t("insuranceForm.step1.address")}
+                            name={`travellers.${index}.address` as Path<InsuranceFormValues>}
+                            register={register}
+                            placeholder={t("insuranceForm.step1.addressPlaceholder")}
+                            error={getError(`travellers.${index}.address` as Path<InsuranceFormValues>)}
+                            rows={4}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                           <div className="flex items-start gap-6 md:col-span-2">
                             <div className="flex-1">
                               <InputWithLabel
-                                label={t("insuranceForm.step1.address")}
-                                name={`travellers.${index}.address` as Path<InsuranceFormValues>}
+                                label={t("insuranceForm.step1.city")}
+                                name={`travellers.${index}.city` as Path<InsuranceFormValues>}
                                 register={register}
-                                placeholder={t("insuranceForm.step1.addressPlaceholder")}
-                                error={getError(`travellers.${index}.address` as Path<InsuranceFormValues>)}
+                                placeholder={t("insuranceForm.step1.cityPlaceholder")}
+                                error={getError(`travellers.${index}.city` as Path<InsuranceFormValues>)}
                               />
                             </div>
                             <div className="flex-1">
@@ -3891,7 +4365,24 @@ export default function InsuranceForm() {
                               />
                             </div>
                           </div>
+
+                          <InputWithLabel
+                            label={t("insuranceForm.step1.state")}
+                            name={`travellers.${index}.state` as Path<InsuranceFormValues>}
+                            register={register}
+                            placeholder={t("insuranceForm.step1.statePlaceholder")}
+                            error={getError(`travellers.${index}.state` as Path<InsuranceFormValues>)}
+                          />
+                          <SelectWithLabel
+                            label={t('insuranceForm.step1.nationality')}
+                            name={`travellers.${index}.nationality` as Path<InsuranceFormValues>}
+                            control={control}
+                            options={currentNationalityOptions}
+                            placeholder={t('insuranceForm.step1.selectNationality')}
+                            error={getError(`travellers.${index}.nationality` as Path<InsuranceFormValues>)}
+                          />
                         </div>
+
                         {/* Emergency Contact Details */}
                         <div className="mt-4 pt-4 border-t border-dashed">
                           <h4 className="text-md font-semibold text-[#1A2C50] mb-3">{t("insuranceForm.step3.title")}</h4>
@@ -3946,15 +4437,57 @@ export default function InsuranceForm() {
                     nationality: "",
                     address: "",
                     zip: "",
+                    city: "",
+                    state: "",
+                    phone_code: "",
+                    phone_number: "",
                   })} className="mt-6">{t("insuranceForm.step1.addAdditionalTraveller")}</Button>
 
-                  <div className="mt-8 pt-6 border-t">
+                  {/* <div className="mt-8 pt-6 border-t">
                     <div className="mt-4 p-6 bg-gray-50 rounded-md border">
                       <h3 className="text-xl font-semibold text-[#1A2C50] mb-2">{t("insuranceForm.quoteSummary")}</h3>
                       <p className="text-2xl font-bold text-[#00BBD3]">{renderQuoteDisplay()}</p>
                       <p>{t("insuranceForm.step4.summaryOfCoverage.coverage.medical")}: {getEmergencyMedicalLabel(watch("emergency_medical_coverage"))} {quoteResult?.data ? `(${formatEuro(quoteResult.data.medicalCoverAmount)})` : ''}</p>
                       <p>{t("insuranceForm.step4.summaryOfCoverage.coverage.pa")}: {getPALabel(watch("personal_accident_coverage_level"))} {quoteResult?.data ? `(${formatEuro(quoteResult.data.paCoverAmount)})` : ''}</p>
                       <p>{t("insuranceForm.step4.summaryOfCoverage.coverage.transit")}: {watchedValuesForSummary[4] ? t("insuranceForm.yes250k") : t("insuranceForm.no")}</p>
+                    </div>
+                  </div> */}
+                  <div className="mt-4 pt-6 border-t">
+                    <div className="mt-4 p-6 bg-gray-50 rounded-md border">
+                      <h3 className="text-xl font-semibold text-[#1A2C50] mb-2">
+                        {t("insuranceForm.quoteSummary")}
+                      </h3>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-2xl font-bold text-[#00BBD3]">Total quote</span>
+                        <span className="text-2xl font-bold text-[#00BBD3]">{renderQuoteDisplay()}</span>
+                      </div>
+
+                      {renderQuoteWarnings()}
+
+                      {(() => {
+                        const travellerBreakdown = getTravellerBreakdown();
+                        const numberOfTravellers = travellerBreakdown.length;
+                        const medicalCoverage = travellerBreakdown[0]?.medical || 0;
+                        const paCoverage = travellerBreakdown[0]?.pa || 0;
+
+                        return (
+                          <div className="">
+                            <div className="flex justify-between items-center">
+                              <span>{t("insuranceForm.step4.summaryOfCoverage.coverage.medical")}: {formatEuro(medicalCoverage)} × {numberOfTravellers} traveller</span>
+                              <span className="font-medium">{formatEuro(medicalCoverage * numberOfTravellers)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span>{t("insuranceForm.step4.summaryOfCoverage.coverage.pa")}: {formatEuro(paCoverage)} × {numberOfTravellers} traveller</span>
+                              <span className="font-medium">{formatEuro(paCoverage * numberOfTravellers)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span>{t("insuranceForm.step4.summaryOfCoverage.coverage.transit")}</span>
+                              <span className="font-medium">{watchedValuesForSummary[4] ? "€25.00" : "€0.00"}</span>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                   {getError("travellers" as Path<InsuranceFormValues>) && typeof getError("travellers" as Path<InsuranceFormValues>)?.message === 'string' && <p className="text-sm text-red-500 mt-1">{getError("travellers" as Path<InsuranceFormValues>)?.message}</p>}
@@ -3985,7 +4518,7 @@ export default function InsuranceForm() {
                   </div>
 
                   <div className="mt-6"><InputWithLabel label={t("insuranceForm.step2.stayName")} name="stay_name" register={register} error={getError("stay_name")} /></div>
-                  <div className="mt-8 pt-6 border-t">
+                  {/* <div className="mt-8 pt-6 border-t">
                     <h3 className="text-lg font-semibold mb-3 text-[#1A2C50]">{t("insuranceForm.step2.citiesVisitingTitle")}</h3>
                     {cityFields.map((field, index) => {
                       const cityNamePath = `trip_cities.${index}.name` as Path<InsuranceFormValues>; const cityZoneTypePath = `trip_cities.${index}.zoneType` as Path<InsuranceFormValues>;
@@ -3999,14 +4532,52 @@ export default function InsuranceForm() {
                     })}
                     <Button type="button" variant="outline" onClick={() => appendCity({ name: "", zoneType: "GREEN" })}>{t("insuranceForm.step2.addCity")}</Button>
                     {getError("trip_cities" as Path<InsuranceFormValues>) && typeof getError("trip_cities" as Path<InsuranceFormValues>)?.message === 'string' && <p className="text-sm text-red-500 mt-1">{getError("trip_cities" as Path<InsuranceFormValues>)?.message}</p>}
-                  </div>
-                  <div className="mt-6 pt-6 border-t">
+                  </div> */}
+                  {/* <div className="mt-6 pt-6 border-t">
                     <div className="mt-4 p-6 bg-gray-50 rounded-md border">
                       <h3 className="text-xl font-semibold text-[#1A2C50] mb-2">{t("insuranceForm.quoteSummary")}</h3>
                       <p className="text-2xl font-bold text-[#00BBD3]">{renderQuoteDisplay()}</p>
                       <p>{t("insuranceForm.step4.summaryOfCoverage.coverage.medical")}: {getEmergencyMedicalLabel(watch("emergency_medical_coverage"))} {quoteResult?.data ? `(${formatEuro(quoteResult.data.medicalCoverAmount)})` : ''}</p>
                       <p>{t("insuranceForm.step4.summaryOfCoverage.coverage.pa")}: {getPALabel(watch("personal_accident_coverage_level"))} {quoteResult?.data ? `(${formatEuro(quoteResult.data.paCoverAmount)})` : ''}</p>
                       <p>{t("insuranceForm.step4.summaryOfCoverage.coverage.transit")}: {watchedValuesForSummary[4] ? t("insuranceForm.yes250k") : t("insuranceForm.no")}</p>
+                    </div>
+                  </div> */}
+                  <div className="mt-4 pt-6 border-t">
+                    <div className="mt-4 p-6 bg-gray-50 rounded-md border">
+                      <h3 className="text-xl font-semibold text-[#1A2C50] mb-2">
+                        {t("insuranceForm.quoteSummary")}
+                      </h3>
+
+                      <div className="flex justify-between items-center">
+                        <span className="text-2xl font-bold text-[#00BBD3]">Total quote</span>
+                        <span className="text-2xl font-bold text-[#00BBD3]">{renderQuoteDisplay()}</span>
+                      </div>
+
+                      {renderQuoteWarnings()}
+
+                      {(() => {
+                        const travellerBreakdown = getTravellerBreakdown();
+                        const numberOfTravellers = travellerBreakdown.length;
+                        const medicalCoverage = travellerBreakdown[0]?.medical || 0;
+                        const paCoverage = travellerBreakdown[0]?.pa || 0;
+
+                        return (
+                          <div className="">
+                            <div className="flex justify-between items-center">
+                              <span>{t("insuranceForm.step4.summaryOfCoverage.coverage.medical")}: {formatEuro(medicalCoverage)} × {numberOfTravellers} traveller</span>
+                              <span className="font-medium">{formatEuro(medicalCoverage * numberOfTravellers)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span>{t("insuranceForm.step4.summaryOfCoverage.coverage.pa")}: {formatEuro(paCoverage)} × {numberOfTravellers} traveller</span>
+                              <span className="font-medium">{formatEuro(paCoverage * numberOfTravellers)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span>{t("insuranceForm.step4.summaryOfCoverage.coverage.transit")}</span>
+                              <span className="font-medium">{watchedValuesForSummary[4] ? "€25.00" : "€0.00"}</span>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 </>
@@ -4027,7 +4598,7 @@ export default function InsuranceForm() {
                   </div>
                 </>
               )} */}
-              {step === 3 && (
+              {/* {step === 3 && (
                 <>
                   <h2 className="text-2xl font-semibold mb-6 text-[#1A2C50]">{t("insuranceForm.step4.summaryOfCoverage.title")}</h2>
                   <div className="space-y-3 p-6 bg-gray-50 rounded-md border mb-6">
@@ -4035,12 +4606,7 @@ export default function InsuranceForm() {
                     <div><strong>{t("insuranceForm.step1.countryOfResidence")}:</strong> {getCountryOfResidenceLabel(watchedValuesForSummary[16])}</div>
                     <div><strong>{t("insuranceForm.step4.summaryOfCoverage.totalRiskZoneDays")}</strong> {calculatedTotalRiskZoneDays ?? "N/A"}</div>
                     <div><strong>{t("insuranceForm.step4.summaryOfCoverage.riskZoneBreakdown")}</strong></div>
-                    {/* <ul className="list-disc list-inside pl-4">
-                      <li>{t("insuranceForm.step4.summaryOfCoverage.zone.green")}: {watch("green_zone_days") || 0}</li>
-                      <li>{t("insuranceForm.step4.summaryOfCoverage.zone.amber")}: {watch("amber_zone_days") || 0}</li>
-                      <li>{t("insuranceForm.step4.summaryOfCoverage.zone.red")}: {watch("red_zone_days") || 0} </li>
-                      {Number(watch("black_zone_days") || 0) > 0 && <li>{t("insuranceForm.step4.summaryOfCoverage.zone.black")}: {watch("black_zone_days")}</li>}
-                    </ul> */}
+                    
                     <div className="pl-4">
                       <div className="flex justify-between">
                         <span>{t("insuranceForm.step4.summaryOfCoverage.zone.green")}:</span>
@@ -4061,13 +4627,6 @@ export default function InsuranceForm() {
                         </div>
                       )}
                     </div>
-                    {/* <div><strong>{t("insuranceForm.step4.summaryOfCoverage.coverageSelected")}</strong></div>
-                    <ul className="list-disc list-inside pl-4">
-                      <li>{t("insuranceForm.step4.summaryOfCoverage.coverage.medical")}: {getEmergencyMedicalLabel(watch("emergency_medical_coverage"))} {quoteResult?.data ? `(${formatEuro(quoteResult.data.medicalCoverAmount)})` : ''}</li>
-                      <li>{t("insuranceForm.step4.summaryOfCoverage.coverage.pa")}: {getPALabel(watch("personal_accident_coverage_level"))} {quoteResult?.data ? `(${formatEuro(quoteResult.data.paCoverAmount)})` : ''}</li>
-                      <li>{t("insuranceForm.step4.summaryOfCoverage.coverage.transit")}: {watchedValuesForSummary[4] ? t("insuranceForm.yes250k") : t("insuranceForm.no")}</li>
-                    </ul> */}
-                    {/* <div className="mt-4 pt-3 border-t"><strong className="text-xl">{t("insuranceForm.step4.summaryOfCoverage.totalQuote")}:</strong><span className="text-xl font-bold text-[#00BBD3] ml-2">{renderQuoteDisplay()}</span></div> */}
                     <div>
                       <strong>Coverage Selected (per traveller):</strong>
                       <div className="pl-4">
@@ -4095,7 +4654,6 @@ export default function InsuranceForm() {
                         ))}
                       </div>
                     </div>
-                    {/* Show VAT if applicable */}
                     {(() => {
                       const vat = getVatInfo();
                       if (vat && quoteResult?.data) {
@@ -4109,7 +4667,6 @@ export default function InsuranceForm() {
                       }
                       return null;
                     })()}
-                    {/* Show total and final total with VAT */}
                     <div className="mt-4 pt-3 border-t">
                       <div className="flex justify-between">
                         <strong className="text-xl">{t("insuranceForm.step4.summaryOfCoverage.totalQuote")}:</strong>
@@ -4137,8 +4694,6 @@ export default function InsuranceForm() {
                     {renderQuoteWarnings()}
                   </div>
                   <h3 className="text-xl font-semibold text-[#1A2C50] mb-3">{t("insuranceForm.step4.insuredDetails.title")}</h3>
-                  {/* {watchedTravellersForSummary && watchedTravellersForSummary.map((traveller, index) => (<div key={`summary-traveller-${index}`} className="space-y-1 p-4 bg-gray-50 rounded-md border mb-3"><p className="font-semibold">{index === 0 ? t("insuranceForm.step4.insuredDetails.primaryTraveller") : `${t("insuranceForm.step4.insuredDetails.additionalTraveller")} ${index + 1}`}</p><div><strong>{t("insuranceForm.step4.insuredDetails.name")}:</strong> {formatFullName(traveller.first_name, traveller.last_name)}</div><div><strong>{t("insuranceForm.step4.insuredDetails.age")}:</strong> {calculateAge(traveller.birthdate) || "N/A"}</div><div><strong>{t("insuranceForm.step4.insuredDetails.nationality")}:</strong> {getNationalityLabel(traveller.nationality) || "N/A"}</div><div><strong>{t("insuranceForm.step1.email")}:</strong> {traveller.email || "N/A"}</div> */}
-                  {/* <div><strong>{t("insuranceForm.step1.address")}:</strong> {`${traveller.address || "N/A"}, ${traveller.zip || "N/A"}`}</div></div>))} */}
                   {watchedTravellersForSummary && watchedTravellersForSummary.map((traveller, index) => (
                     <div key={`summary-traveller-${index}`} className="space-y-1 p-4 bg-gray-50 rounded-md border mb-3">
                       <p className="font-semibold">
@@ -4213,6 +4768,225 @@ export default function InsuranceForm() {
                     <div className="grid gap-1.5 leading-none"><Label htmlFor="consent" className="font-medium leading-snug">{t("insuranceForm.step4.consent.label")}</Label>{getError("consent") && <p className="text-sm text-red-500">{getError("consent")?.message}</p>}</div>
                   </div>
                 </>
+              )} */}
+              {step === 3 && (
+                <div className="max-w-4xl mx-auto p-6 bg-white">
+                  <h1 className="text-3xl font-bold mb-8 text-[#1A2C50]">Summary</h1>
+
+                  {/* Travel Dates */}
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">Travel Dates</h2>
+                    <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">Start Date</span>
+                        <span className="font-medium">{formatDateForDisplay(watchedValuesForSummary[0])}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">End Date</span>
+                        <span className="font-medium">{formatDateForDisplay(watchedValuesForSummary[1])}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Country of Residence */}
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">Country of Residence</h2>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <span className="font-medium">{getCountryOfResidenceLabel(watchedValuesForSummary[16])}</span>
+                    </div>
+                  </div>
+
+                  {/* Risk Zone Breakdown */}
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">Risk Zone Breakdown</h2>
+                    <div className="bg-gray-50 p-4 rounded-lg">
+                      <div className="flex justify-between items-center mb-3">
+                        <span className="text-gray-600 font-medium">Total Risk Zone Days</span>
+                        <span className="font-medium">{calculatedTotalRiskZoneDays ?? "N/A"}</span>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">{t("insuranceForm.step4.summaryOfCoverage.zone.green")}</span>
+                          <span className="font-medium">{watch("green_zone_days") || 0}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">{t("insuranceForm.step4.summaryOfCoverage.zone.amber")}</span>
+                          <span className="font-medium">{watch("amber_zone_days") || 0}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">{t("insuranceForm.step4.summaryOfCoverage.zone.red")}</span>
+                          <span className="font-medium">{watch("red_zone_days") || 0}</span>
+                        </div>
+                        {Number(watch("black_zone_days") || 0) > 0 && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-600">{t("insuranceForm.step4.summaryOfCoverage.zone.black")}</span>
+                            <span className="font-medium">{watch("black_zone_days")}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Coverage per Traveler */}
+                  {/* Coverage Summary */}
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">Coverage Summary</h2>
+                    <div className="bg-gray-50 p-4 rounded-lg space-y-4">
+                      {(() => {
+                        const travellerBreakdown = getTravellerBreakdown();
+                        const numberOfTravellers = travellerBreakdown.length;
+                        const medicalCoverage = travellerBreakdown[0]?.medical || 0;
+                        const paCoverage = travellerBreakdown[0]?.pa || 0;
+                        const hasTransit = travellerBreakdown.some(trav => (trav.transit || 0) > 0);
+
+                        return (
+                          <div className="space-y-2">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Emergency medical coverage × {numberOfTravellers} traveller</span>
+                              <span className="font-medium">{formatEuro(medicalCoverage * numberOfTravellers)}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Personal accident coverage × {numberOfTravellers} traveller</span>
+                              <span className="font-medium">{formatEuro(paCoverage * numberOfTravellers)}</span>
+                            </div>
+                            {hasTransit && (
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600">Transit</span>
+                                <span className="font-medium">{formatEuro(25.00)}</span>
+                              </div>
+                            )}
+                            {(() => {
+                              const vat = getVatInfo();
+                              if (vat && quoteResult?.data) {
+                                return (
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-gray-600">VAT</span>
+                                    <span className="font-medium">19%</span>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })()}
+                            <div className="border-t pt-2 mt-3">
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600 text-xl font-semibold">Total amount</span>
+                                <span className="font-bold text-[#00BBD3] text-xl">{formatEuro(quoteResult?.data?.totalAmount || 0)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                  <div className="text-red-600 font-semibold mb-6">
+                    {t("insuranceForm.step4.summaryOfCoverage.note")}
+                  </div>
+                  {renderQuoteWarnings()}
+
+                  {/* Insured Details */}
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">{t("insuranceForm.step4.insuredDetails.title")}</h2>
+                    {watchedTravellersForSummary && watchedTravellersForSummary.map((traveller, index) => (
+                      <div key={`summary-traveller-${index}`} className="bg-gray-50 p-4 rounded-lg mb-4 space-y-2">
+                        <div className="font-semibold text-gray-800 border-b pb-2">
+                          {index === 0
+                            ? t("insuranceForm.step4.insuredDetails.primaryTraveller")
+                            : `${t("insuranceForm.step4.insuredDetails.additionalTraveller")} ${index}`}
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">{t("insuranceForm.step4.insuredDetails.name")}</span>
+                          <span className="font-medium">{formatFullName(traveller.first_name, traveller.last_name)}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">{t("insuranceForm.step4.insuredDetails.age")}</span>
+                          <span className="font-medium">{calculateAge(traveller.birthdate) || "N/A"}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">{t("insuranceForm.step4.insuredDetails.nationality")}</span>
+                          <span className="font-medium">{getNationalityLabel(traveller.nationality) || "N/A"}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">{t("insuranceForm.step1.email")}</span>
+                          <span className="font-medium">{traveller.email || "N/A"}</span>
+                        </div>
+                        <div className="flex justify-between items-start">
+                          <span className="text-gray-600">{t("insuranceForm.step1.address")}</span>
+                          <span className="font-medium text-right">{`${traveller.address || "N/A"}, ${traveller.zip || "N/A"}`}</span>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t">
+                          <div className="font-medium text-gray-800 mb-2">{t("insuranceForm.step4.emergencyContact.title")}</div>
+                          {index === 0 ? (
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600">{t("insuranceForm.step4.emergencyContact.name")}</span>
+                                <span className="font-medium">{formatFullName(watchedValuesForSummary[11], watchedValuesForSummary[12])}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600">{t("insuranceForm.step4.emergencyContact.number")}</span>
+                                <span className="font-medium">{watchedValuesForSummary[13] || "N/A"}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600">{t("insuranceForm.step3.relationship")}</span>
+                                <span className="font-medium">{watchedValuesForSummary[14] || "N/A"}</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600">{t("insuranceForm.step4.emergencyContact.name")}</span>
+                                <span className="font-medium">{formatFullName(traveller.emergency_contact_first_name, traveller.emergency_contact_last_name) || "N/A"}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600">{t("insuranceForm.step4.emergencyContact.number")}</span>
+                                <span className="font-medium">{traveller.emergency_contact_phone || "N/A"}</span>
+                              </div>
+                              <div className="flex justify-between items-center">
+                                <span className="text-gray-600">{t("insuranceForm.step3.relationship")}</span>
+                                <span className="font-medium">{traveller.emergency_contact_relation || "N/A"}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Trip Information */}
+                  <div className="mb-8">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-900">{t("insuranceForm.step4.tripInformation.title")}</h2>
+                    <div className="bg-gray-50 p-4 rounded-lg space-y-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">{t("insuranceForm.step4.tripInformation.purpose")}</span>
+                        <span className="font-medium">{getTripPurposeLabel(watchedValuesForSummary[9])}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-600">{t("insuranceForm.step4.tripInformation.primaryRegions")}</span>
+                        <span className="font-medium">{watchedValuesForSummary[10] || "N/A"}</span>
+                      </div>
+                      {/* {watchedTripCitiesForSummary && watchedTripCitiesForSummary.filter(city => city.name && city.name.trim() !== "").length > 0 && (
+                        <div className="flex justify-between items-start">
+                          <span className="text-gray-600">{t("insuranceForm.step4.tripInformation.citiesVisiting")}</span>
+                          <div className="text-right font-medium">
+                            {watchedTripCitiesForSummary.filter(city => city.name && city.name.trim() !== "").map((city, idx) => (
+                              <div key={`summary-city-${idx}`}>{city.name}</div>
+                            ))}
+                          </div>
+                        </div>
+                      )} */}
+                    </div>
+                  </div>
+
+                  {/* Affiliate Code */}
+
+
+                  {/* Consent */}
+                  <div className="mb-6"><InputWithLabel label={t("insuranceForm.step4.affiliateCode.label")} name="affiliate_code" register={register} error={getError("affiliate_code")} /></div>
+                  <div className="flex items-start space-x-3">
+                    <Controller name="consent" control={control} render={({ field }) => (<Checkbox id="consent" checked={field.value === true} onCheckedChange={(checked) => field.onChange(checked === true ? true : undefined)} onBlur={field.onBlur} />)} />
+                    <div className="grid gap-1.5 leading-none"><Label htmlFor="consent" className="font-medium leading-snug">{t("insuranceForm.step4.consent.label")}</Label>{getError("consent") && <p className="text-sm text-red-500">{getError("consent")?.message}</p>}</div>
+                  </div>
+                </div>
               )}
               <div className="flex flex-col sm:flex-row justify-between pt-8 mt-8 border-t gap-4">
                 {step > 0 && (<Button type="button" variant="outline" onClick={handlePrevStep} className="w-full sm:w-auto px-8 py-3 text-base">{t("insuranceForm.actions.back")}</Button>)}

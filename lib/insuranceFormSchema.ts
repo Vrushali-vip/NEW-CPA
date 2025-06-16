@@ -28,6 +28,10 @@ export interface Traveller {
   emergency_contact_phone_code?: string;
   emergency_contact_phone_number?: string;
   emergency_contact_phone?: string;
+  city?: string; // <-- Add this line
+  state?: string; // <-- Add this line
+  phone_code?: string; // <-- Add this
+  phone_number?: string;
 }
 export type InsuranceFormValues = {
   trip_start_date: string;
@@ -39,6 +43,9 @@ export type InsuranceFormValues = {
   emergency_medical_coverage: string;
   personal_accident_coverage_level: string;
   add_transit_coverage: boolean;
+
+  state: string;
+  city?: string;
 
   c_first_name: string;
   c_last_name: string;
@@ -55,7 +62,6 @@ export type InsuranceFormValues = {
   country_of_residence: string;
   zip: string;
   address: string;
-  state: string;
   customer_id: string;
   email: string;
   purchase_context: 'self' | 'other';
@@ -149,6 +155,10 @@ export const getPurchaseWithoutLoginSchema = (getMsg: ValidationMessageGetter) =
       'string.empty': getMsg('insuranceForm.validation.required'),
       'any.required': getMsg('insuranceForm.validation.required')
     }),
+    city: Joi.string().max(100).allow("").label("City"),
+    state: Joi.string().max(100).allow("").label("State/Province"),
+    phone_code: Joi.string().required().label("Phone Code"),
+    phone_number: Joi.string().required().label("Phone Number"),
     email: Joi.string().email({ tlds: { allow: false } }).trim().required().messages({
       'string.empty': getMsg('insuranceForm.validation.required'),
       'any.required': getMsg('insuranceForm.validation.required'),
@@ -202,6 +212,16 @@ export const getPurchaseWithoutLoginSchema = (getMsg: ValidationMessageGetter) =
       'string.empty': getMsg('insuranceForm.validation.required'),
       'any.required': getMsg('insuranceForm.validation.required')
     }),
+    city: Joi.string().max(100).allow("").label("City"),
+    state: Joi.string().max(100).allow("").label("State/Province"),
+    phone_code: Joi.string().required().messages({
+      "any.required": getMsg("insuranceForm.validation.contact.phoneCode.required"),
+      "string.empty": getMsg("insuranceForm.validation.contact.phoneCode.empty"),
+    }),
+    phone_number: Joi.string().required().messages({
+      "any.required": getMsg("insuranceForm.validation.contact.phoneNumber.required"),
+      "string.empty": getMsg("insuranceForm.validation.contact.phoneNumber.empty"),
+    }),
   });
 
 
@@ -212,6 +232,8 @@ export const getPurchaseWithoutLoginSchema = (getMsg: ValidationMessageGetter) =
         "any.required": getMsg("insuranceForm.validation.tripStartDate.required"),
         "string.empty": getMsg("insuranceForm.validation.tripStartDate.empty"),
       }),
+
+
 
     trip_end_date: Joi.string()
       .required()
@@ -271,6 +293,9 @@ export const getPurchaseWithoutLoginSchema = (getMsg: ValidationMessageGetter) =
       "any.required": getMsg("insuranceForm.validation.contact.lastName.required")
     }),
 
+    city: Joi.string().max(100).allow("").label("City"),
+    state: Joi.string().max(100).allow("").label("State/Province"),
+    
     c_birthdate: Joi.string().required()
       .regex(/^\d{4}-\d{2}-\d{2}$/).messages({
         "any.required": getMsg("insuranceForm.validation.contact.birthdate.required"),
@@ -545,13 +570,14 @@ export const fieldsByStep: Array<Array<keyof InsuranceFormValues>> = [
 ];
 
 export const getTripPurposes = (getMsg: ValidationMessageGetter) => [
-  { value: "BUSINESS", label: getMsg("insuranceForm.options.tripPurposes.BUSINESS") },
+  { value: "GOVERNMENT", label: getMsg("insuranceForm.options.tripPurposes.GOVERNMENT") },
   { value: "HUMANITARIAN_WORK", label: getMsg("insuranceForm.options.tripPurposes.HUMANITARIAN_WORK") },
   { value: "JOURNALISM", label: getMsg("insuranceForm.options.tripPurposes.JOURNALISM") },
-  { value: "MEDICAL", label: getMsg("insuranceForm.options.tripPurposes.MEDICAL") },
   { value: "EDUCATION", label: getMsg("insuranceForm.options.tripPurposes.EDUCATION") },
+  { value: "BUSINESS", label: getMsg("insuranceForm.options.tripPurposes.BUSINESS") },
+  { value: "MEDICAL", label: getMsg("insuranceForm.options.tripPurposes.MEDICAL") },
   { value: "PERSONAL", label: getMsg("insuranceForm.options.tripPurposes.PERSONAL") },
-  { value: "OTHER", label: getMsg("insuranceForm.options.tripPurposes.OTHER") }
+  { value: "OTHER", label: getMsg("insuranceForm.options.tripPurposes.OTHER") },
 ];
 
 export const getEmergencyMedicalCoverageOptions = (getMsg: ValidationMessageGetter) => [

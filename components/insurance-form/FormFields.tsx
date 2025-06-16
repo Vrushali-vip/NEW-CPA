@@ -183,6 +183,8 @@ interface TextareaWithLabelProps<TFieldValues extends FieldValues = FieldValues>
   name: Path<TFieldValues> | string;
   register: UseFormRegister<TFieldValues>;
   error?: FieldError;
+  placeholder?: string;
+  rows: number;
 }
 export function TextareaWithLabel<TFieldValues extends FieldValues = FieldValues>({ 
     label, name, register, error 

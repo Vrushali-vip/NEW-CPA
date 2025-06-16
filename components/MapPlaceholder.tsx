@@ -165,16 +165,55 @@
 
 
 
+// export const MapPlaceholder = () => {
+//   return (
+//     <div className="flex flex-col items-center w-full py-0 px-4">
+//       <div className="mt-2 relative w-full overflow-hidden border shadow-md">
+//         <iframe
+//           src="https://www.google.com/maps/d/u/0/embed?mid=1SCruvJ4faydto6n9giaSndEuEm6CUsQ&ehbc=2E312F&noprof=1&ll=48.530707931098505%2C31.176593999999987&z=5"
+//           title="Map"
+//           className="w-full h-[600px] border-0"
+//           allowFullScreen
+//           loading="lazy" 
+//         />
+//       </div>
+//     </div>
+//   );
+// };
+
+
+'use client'; // for Next.js — ignore or remove if not needed
+
+import { useEffect, useRef } from 'react';
+import mapboxgl from 'mapbox-gl';
+
+mapboxgl.accessToken = 'pk.eyJ1IjoibWF0dDI0NTIiLCJhIjoiY21icXlicHM4MDRtcTJqc2FsY2lrdDNrdyJ9.kDn0UwFZtZUHhqxq7kwDKA'; // 🔁 Replace with your token
+
 export const MapPlaceholder = () => {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const map = new mapboxgl.Map({
+      container: mapContainerRef.current!,
+      style: 'mapbox://styles/matt2452/cmbrtkjuu00al01qw0soahyi9',
+      center: [32.235, 48.42],
+      zoom: 5.28,
+    });
+
+    map.setMaxBounds([
+      [22, 44],  
+      [41, 53],  
+    ]);
+
+    return () => map.remove(); 
+  }, []);
+
   return (
     <div className="flex flex-col items-center w-full py-0 px-4">
       <div className="mt-2 relative w-full overflow-hidden border shadow-md">
-        <iframe
-          src="https://www.google.com/maps/d/u/0/embed?mid=1SCruvJ4faydto6n9giaSndEuEm6CUsQ&ehbc=2E312F&noprof=1&ll=48.530707931098505%2C31.176593999999987&z=5"
-          title="Map"
-          className="w-full h-[600px] border-0"
-          allowFullScreen
-          loading="lazy" 
+        <div
+          ref={mapContainerRef}
+          className="w-full h-[600px]"
         />
       </div>
     </div>
